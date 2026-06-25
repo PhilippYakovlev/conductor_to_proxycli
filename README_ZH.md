@@ -9,9 +9,25 @@
 >    * 确保主机上已运行 Docker。
 >    * 停止并删除冲突的旧容器（如果系统中仍存在）：`docker rm -f cli-proxy-api`。
 >    * 在本地模式下运行整个套件：`./run.sh local`。
->    * 在 **[wiki/setup.md](wiki/setup.md)** 中阅读有关安装和调试 carbon 的详细信息。
+>    * 在 **[wiki/setup.md](wiki/setup.md)** 中阅读有关安装 and 调试 carbon 的详细信息。
 > 3. **如何读取代理日志：** 有关拦截来自 Conductor 的请求和映射模型的所有信息都写入包装器容器的日志中：`docker logs -f smartproxy-wrapper`。
 > 4. **请勿破坏 macOS 代码签名：** 请勿尝试修改磁盘上的 Conductor 二进制文件（这会导致 `SIGKILL`）。通过工作区 `.conductor/settings.local.toml` 和 [codex_wrapper.sh](smart-proxy/codex_wrapper.sh) 脚本进行所有配置。
+
+---
+
+## 🎯 关于项目与开发初衷
+
+**Conductor IDE** 是一款极其方便的开发工具，但它开箱即用并不支持自定义 AI 服务商。
+
+**SmartProxy** 的创建正是为了解决这个问题。该项目的核心思想是允许开发人员将他们自己的整个订阅和 API 堆栈（包括个人代理、自定义端点和替代服务商）直接连接到 Conductor。
+
+> [!NOTE]
+> 最近，Conductor 开发团队发布了一项名为 **"OpenCode Integration"** 的新功能。这是一个巨大的进步，我们对此表示感谢！然而，目前该功能仍处于测试阶段，在我们的工作流程中存在一些 Bug。因此，本地 **SmartProxy** 堆栈目前仍然是我们的主要稳定解决方案。
+
+### 🌟 核心特性：
+* **自定义模型映射：** 该项目支持将 Conductor 的内部模型（例如 `gpt-5.5` 或 `gpt-5.4`）灵活映射到来自第三方服务商的任何自定义模型（通过 `smart-proxy` 和 `cli-proxy-api`）。
+* **即时日志与调试：** 拦截并记录传入的 RPC/HTTP 请求（包括 Codex 的 `/v1/chat/completions` 和 `/v1/responses` 端点）。
+* **支持替代模型 (Claude)：** 内置的本地 `free-claude-code` 适配器允许透明地代理到 Claude 模型，并完全支持推理（`thinking`）模式。
 
 ---
 
@@ -34,7 +50,7 @@
 * **[wiki/log.md](wiki/log.md)** — 项目变更历史。
 
 ### 🤖 人工智能代理指令 (Codex, Claude, Gemini)
-在项目根目录下创建了专用的代理配置文件：**[agents.md](agents.md)**、**[claude.md](claude.md)** 和 **[gemini.md](gemini.md)**。
+In 项目根目录下创建了专用的代理配置文件：**[agents.md](agents.md)**、**[claude.md](claude.md)** 和 **[gemini.md](gemini.md)**。
 
 ---
 

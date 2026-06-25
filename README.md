@@ -15,6 +15,22 @@
 
 ---
 
+## 🎯 About the Project and Goal
+
+**Conductor IDE** is an incredibly convenient development tool, but out of the box, it does not support custom AI providers.
+
+**SmartProxy** was created to solve this problem. The core idea is to allow developers to connect their entire stack of subscriptions and APIs (including personal proxies, custom endpoints, and alternative providers) directly to Conductor.
+
+> [!NOTE]
+> Recently, the Conductor development team released a new feature called **"OpenCode Integration"**. This is a great step forward, and we thank them for it! However, at the moment, this feature is still in beta and has some bugs in our workflow. Therefore, the local **SmartProxy** stack remains our primary stable solution for now.
+
+### 🌟 Key Features:
+* **Custom Model Mapping:** The project supports flexible mapping of Conductor's internal models (e.g., `gpt-5.5` or `gpt-5.4`) to any of your custom models from third-party providers (via `smart-proxy` and `cli-proxy-api`).
+* **On-the-fly Logging & Debugging:** Intercepting and logging incoming RPC/HTTP requests (including `/v1/chat/completions` and `/v1/responses` endpoints for Codex).
+* **Support for Alternative Models (Claude):** The built-in local `free-claude-code` adapter allows transparent proxying to Claude models with full support for the reasoning (`thinking`) mode.
+
+---
+
 This repository unites all adjacent proxy server projects into a single structure with a shared Docker environment:
 
 1. **`cli-proxy-api`** (local or remote proxy server backend).
