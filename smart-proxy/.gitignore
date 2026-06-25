@@ -1,0 +1,8 @@
+.env
+node_modules
+patched_sdk_live.js
+.DS_Store
+inspect_*.js
+temp_inspect_*.js
+last_completion_request.json
+last_run_request.bin

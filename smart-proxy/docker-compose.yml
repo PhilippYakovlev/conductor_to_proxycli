@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  conductor-to-proxycli:
+    build: .
+    container_name: conductor-to-proxycli
+    ports:
+      - "${PORT:-8317}:${PORT:-8317}"
+    environment:
+      - PORT=${PORT:-8317}
+      - TARGET_HOST=${TARGET_HOST:-host.docker.internal}
+      - TARGET_PORT=${TARGET_PORT:-8319}
+      - CONDUCTOR_GEMINI_MODEL=${CONDUCTOR_GEMINI_MODEL:-gemini-3.5-flash-low}
+      - CONDUCTOR_CLAUDE_MODEL=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - CONDUCTOR_CODEX_MODEL=${CONDUCTOR_CODEX_MODEL:-cliproxy/fast-edit}
+      - CLIPROXY_API_KEY=${CLIPROXY_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+  free-claude-code:
+    build:
+      context: ../free-claude-code
+      dockerfile: Dockerfile
+    container_name: free-claude-code
+    ports:
+      - "8082:8082"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8082
+      - CLIPROXY_BASE_URL=http://host.docker.internal:8317/v1
+      - CLIPROXY_API_KEY=${CLIPROXY_API_KEY}
+      - MODEL=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - MODEL_OPUS=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - MODEL_SONNET=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - MODEL_HAIKU=${CONDUCTOR_HAIKU_MODEL:-cliproxy/gemini-3.5-flash-low}
+      - ENABLE_THINKING=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+

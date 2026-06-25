@@ -1,0 +1,6 @@
+[submodule "cli-proxy-api"]
+	path = cli-proxy-api
+	url = https://github.com/router-for-me/CLIProxyAPI
+[submodule "free-claude-code"]
+	path = free-claude-code
+	url = https://github.com/Alishahryar1/free-claude-code.git

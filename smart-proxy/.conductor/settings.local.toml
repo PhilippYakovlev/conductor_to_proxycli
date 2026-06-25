@@ -1,0 +1,14 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[git]
+worktree_push_auto_setup_remote = false
+
+[prompts]
+general = "Ты должен при каждом ответе писать на какой ветке находимся\nЕсли делаешь коммит - пиши об этом коротко\nТы не делаешь сам мерж и пуш только спрашиваешь об этом когда считаешь нужным"
+
+[environment_variables.local]
+OPENAI_BASE_URL = "http://127.0.0.1:8317/v1"
+CURSOR_API_BASE_URL = "http://127.0.0.1:8317/v1"
+CURSOR_BACKEND_URL = "http://127.0.0.1:8317"
+CURSOR_WEBSITE_URL = "http://127.0.0.1:8317"
+ANTHROPIC_BASE_URL = "http://127.0.0.1:8082"

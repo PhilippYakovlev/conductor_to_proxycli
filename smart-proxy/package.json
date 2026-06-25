@@ -1,0 +1,21 @@
+{
+  "name": "conductor_to_proxycli",
+  "version": "1.0.0",
+  "description": "Smart Proxy redirecting Conductor calls to cli-proxy-api (proxycli)",
+  "main": "proxy_wrapper.js",
+  "scripts": {
+    "start": "node proxy_wrapper.js",
+    "conductor": "./run_conductor.sh",
+    "stop": "./stop_conductor.sh",
+    "install-daemon": "./install_daemon.sh",
+    "daemon": "node launcher_daemon.js"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "1.10.0",
+    "@connectrpc/connect": "^1.6.1",
+    "@connectrpc/connect-node": "^1.6.1",
+    "@statsig/js-client": "3.31.0",
+    "sqlite3": "^5.1.7",
+    "zod": "^3.25.0"
+  }
+}

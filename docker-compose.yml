@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  cli-proxy-api:
+    build:
+      context: ./cli-proxy-api
+      dockerfile: Dockerfile
+    container_name: cli-proxy-api
+    profiles:
+      - local
+    ports:
+      - "8319:8319"
+      - "8085:8085"
+      - "1455:1455"
+      - "54545:54545"
+      - "51121:51121"
+      - "11451:11451"
+    volumes:
+      - ./cli-proxy-api/config.yaml:/CLIProxyAPI/config.yaml
+      - ./cli-proxy-api/auths:/root/.cli-proxy-api
+      - ./cli-proxy-api/logs:/CLIProxyAPI/logs
+    restart: always
+
+  smart-proxy:
+    build:
+      context: ./smart-proxy
+      dockerfile: Dockerfile
+    container_name: smartproxy-wrapper
+    ports:
+      - "${PORT:-8317}:${PORT:-8317}"
+    environment:
+      - PORT=${PORT:-8317}
+      - TARGET_HOST=${TARGET_HOST:-cli-proxy-api}
+      - TARGET_PORT=${TARGET_PORT:-8319}
+      - CONDUCTOR_GEMINI_MODEL=${CONDUCTOR_GEMINI_MODEL:-gemini-3.5-flash-low}
+      - CONDUCTOR_CLAUDE_MODEL=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - CONDUCTOR_CODEX_MODEL=${CONDUCTOR_CODEX_MODEL:-cliproxy/fast-edit}
+      - CLIPROXY_API_KEY=${CLIPROXY_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+  free-claude-code:
+    build:
+      context: ./free-claude-code
+      dockerfile: Dockerfile
+    container_name: free-claude-code
+    ports:
+      - "${CLAUDE_PORT:-8082}:${CLAUDE_PORT:-8082}"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=${CLAUDE_PORT:-8082}
+      - CLIPROXY_BASE_URL=http://smart-proxy:8317/v1
+      - CLIPROXY_API_KEY=${CLIPROXY_API_KEY}
+      - MODEL=${CONDUCTOR_CLAUDE_MODEL:-cliproxy/claude-sonnet-4-6}
+      - MODEL_OPUS=${CONDUCTOR_OPUS_MODEL:-cliproxy/claude-opus-4-6-thinking}
+      - MODEL_SONNET=${CONDUCTOR_SONNET_MODEL:-cliproxy/claude-sonnet-4-6}
+      - MODEL_HAIKU=${CONDUCTOR_HAIKU_MODEL:-cliproxy/gemini-3.5-flash-low}
+      - ENABLE_THINKING=true
+    volumes:
+      - ./free-claude-code/.env:/app/.env
+    restart: always

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conductor Smart Proxy Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 50%, #121520 0%, #08090d 100%);
+      --card-bg: rgba(22, 26, 41, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #6366f1;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --accent-hover: #4f46e5;
+      --success: #10b981;
+      --error: #ef4444;
+      --input-bg: rgba(10, 11, 18, 0.8);
+      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .brand {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    main {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      position: relative;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: white;
+      background: var(--accent-gradient);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="text"], input[type="password"], select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .toggle-pass-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Mapping grid */
+    .mapping-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .mapping-row {
+      display: grid;
+      grid-template-columns: 1fr 40px 1.2fr;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .mapping-row:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .source-model {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .model-icon {
+      font-size: 18px;
+      color: var(--accent);
+      width: 24px;
+      text-align: center;
+    }
+
+    .model-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .arrow {
+      text-align: center;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    button.btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    }
+
+    button.btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    button.btn-primary:active {
+      transform: translateY(0);
+    }
+
+    button.btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+
+    button.btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Logs view */
+    .logs-console {
+      background: #06070a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      height: 380px;
+      overflow-y: auto;
+      color: #38bdf8;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .log-line {
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-time {
+      color: #64748b;
+      margin-right: 8px;
+    }
+
+    .log-info { color: #38bdf8; }
+    .log-success { color: var(--success); }
+    .log-warn { color: #fbbf24; }
+    .log-error { color: var(--error); }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      bottom: 40px;
+    }
+
+    /* Responsive grid */
+    @media (max-width: 600px) {
+      .mapping-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .arrow {
+        transform: rotate(90deg);
+        margin: 4px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-container">
+      <div class="logo">&#8646;</div>
+      <span class="brand">Smart Proxy Control Center</span>
+    </div>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      <span id="proxy-status">Соединение...</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('mapping')">Маппинг моделей Conductor</button>
+      <button class="tab-btn" onclick="switchTab('settings')">Настройки соединения</button>
+      <button class="tab-btn" onclick="switchTab('logs')">Мониторинг запросов</button>
+    </div>
+
+    <!-- TAB: MAPPING -->
+    <div id="tab-mapping" class="tab-content active">
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+        Настройте, какая модель из интерфейса Conductor будет подставляться при запросах к бэкенду <strong>cli-proxy-api</strong>. Вы можете использовать предустановленные названия или вписать кастомную модель.
+      </p>
+
+      <div class="mapping-grid">
+        <!-- Composer / Gemini -->
+        <div class="mapping-row" style="display: none;">
+          <div class="source-model">
+            <span class="model-icon">✨</span>
+            <span class="model-name">Composer / Gemini</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-composer">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Opus (All versions) -->
+        <div class="mapping-row">
+          <div class="source-model">
+            <span class="model-icon">🧠</span>
+            <span class="model-name">Opus (All versions)</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-opus_4_8">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hidden Opus 4.7 1M (for JS compatibility) -->
+        <div class="mapping-row" style="display: none;">
+          <div class="source-model">
+            <span class="model-name">Opus 4.7 1M</span>
+          </div>
+          <select id="map-opus_4_7"></select>
+        </div>
+
+        <!-- Hidden Opus 4.6 1M (for JS compatibility) -->
+        <div class="mapping-row" style="display: none;">
+          <div class="source-model">
+            <span class="model-name">Opus 4.6 1M</span>
+          </div>
+          <select id="map-opus_4_6"></select>
+        </div>
+
+        <!-- Hidden Sonnet 4.6 1M (for JS compatibility) -->
+        <div class="mapping-row" style="display: none;">
+          <div class="source-model">
+            <span class="model-name">Sonnet 4.6 1M</span>
+          </div>
+          <select id="map-sonnet_4_6_1m"></select>
+        </div>
+
+        <!-- Sonnet (All versions) -->
+        <div class="mapping-row">
+          <div class="source-model">
+            <span class="model-icon">🚀</span>
+            <span class="model-name">Sonnet (All versions)</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-sonnet_4_6">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Haiku 4.5 -->
+        <div class="mapping-row">
+          <div class="source-model">
+            <span class="model-icon">⚡</span>
+            <span class="model-name">Haiku 4.5</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-haiku_4_5">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Codex / Fast-Edit -->
+        <div class="mapping-row" style="display: none;">
+          <div class="source-model">
+            <span class="model-icon">✏️</span>
+            <span class="model-name">Codex / Fast-Edit</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-codex">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- GPT 5.5 -->
+        <div class="mapping-row">
+          <div class="source-model">
+            <span class="model-icon">🤖</span>
+            <span class="model-name">GPT 5.5</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-gpt_5_5">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- GPT 5.4 -->
+        <div class="mapping-row">
+          <div class="source-model">
+            <span class="model-icon">🤖</span>
+            <span class="model-name">GPT 5.4</span>
+          </div>
+          <div class="arrow">&rarr;</div>
+          <div class="target-select-wrapper">
+            <select id="map-gpt_5_4">
+              <option value="">-- Не выбрано --</option>
+              <option value="claude-opus-4-6-thinking">claude-opus-4-6-thinking</option>
+              <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+              <option value="gemini-3.5-flash-low">gemini-3.5-flash-low</option>
+              <option value="gemini-3.1-pro-low">gemini-3.1-pro-low</option>
+              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite</option>
+              <option value="gemini-pro-agent">gemini-pro-agent</option>
+              <option value="gemini-3-flash">gemini-3-flash</option>
+              <option value="gemini-3-flash-agent">gemini-3-flash-agent</option>
+              <option value="gpt-5.5">gpt-5.5</option>
+              <option value="gpt-5.4">gpt-5.4</option>
+              <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+              <option value="gpt-oss-120b-medium">gpt-oss-120b-medium</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SETTINGS -->
+    <div id="tab-settings" class="tab-content">
+      <div class="form-group">
+        <label for="target-host">Целевой Хост proxycli</label>
+        <input type="text" id="target-host" placeholder="host.docker.internal или 127.0.0.1">
+      </div>
+
+      <div class="form-group">
+        <label for="target-port">Целевой Порт proxycli</label>
+        <input type="text" id="target-port" placeholder="8319">
+      </div>
+
+      <div class="form-group">
+        <label for="api-key">Ключ Авторизации proxycli (API Key)</label>
+        <div class="input-wrapper">
+          <input type="password" id="api-key" placeholder="sk-...">
+          <button class="toggle-pass-btn" onclick="togglePassword()">ПОКАЗАТЬ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: LOGS -->
+    <div id="tab-logs" class="tab-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 14px; color: var(--text-muted);">Логи последних запросов API (обновляются в реальном времени):</span>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="clearLogs()">Очистить</button>
+      </div>
+      <div class="logs-console" id="logs-console">
+        <div class="log-line"><span class="log-time">--:--:--</span> <span class="log-info">Консоль мониторинга готова к приему данных...</span></div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="loadConfig()">Сбросить</button>
+      <button class="btn btn-primary" onclick="saveConfig()">Сохранить & Применить</button>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">
+    <span id="toast-icon">✓</span>
+    <span id="toast-text">Настройки успешно применены!</span>
+  </div>
+
+  <script>
+    let activeTab = 'mapping';
+    let logsInterval = null;
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.textContent.toLowerCase().includes(tabId === 'mapping' ? 'маппинг' : tabId === 'settings' ? 'настройки' : 'мониторинг'));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      activeTab = tabId;
+
+      if (tabId === 'logs') {
+        startLogsPolling();
+      } else {
+        stopLogsPolling();
+      }
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('api-key');
+      const btn = document.querySelector('.toggle-pass-btn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'СКРЫТЬ';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'ПОКАЗАТЬ';
+      }
+    }
+
+    function showToast(text, isError = false) {
+      const toast = document.getElementById('toast');
+      const textSpan = document.getElementById('toast-text');
+      const iconSpan = document.getElementById('toast-icon');
+
+      textSpan.textContent = text;
+      if (isError) {
+        toast.style.background = '#ef4444';
+        toast.style.boxShadow = '0 10px 25px rgba(239, 68, 68, 0.3)';
+        iconSpan.textContent = '✕';
+      } else {
+        toast.style.background = '#10b981';
+        toast.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.3)';
+        iconSpan.textContent = '✓';
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    async function loadConfig() {
+      try {
+        const response = await fetch('/api/config');
+        if (!response.ok) throw new Error('Ошибка сети при получении конфига');
+        const config = await response.json();
+
+        // Заполняем настройки
+        document.getElementById('target-host').value = config.targetHost || '';
+        document.getElementById('target-port').value = config.targetPort || '';
+        document.getElementById('api-key').value = config.cliproxyApiKey || '';
+
+        // Функция установки значения в select с поддержкой кастомных опций
+        function setSelectValue(id, value) {
+          const select = document.getElementById(id);
+          if (!select) return;
+          if (!value) {
+            select.value = '';
+            return;
+          }
+          
+          // Проверяем, есть ли такое значение
+          let exists = false;
+          for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === value) {
+              exists = true;
+              break;
+            }
+          }
+          
+          // Если нет, добавляем временную кастомную опцию
+          if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = `${value} (кастомная)`;
+            select.appendChild(opt);
+          }
+          select.value = value;
+        }
+
+        // Заполняем маппинги
+        if (config.mappings) {
+          setSelectValue('map-composer', config.mappings.composer);
+          setSelectValue('map-opus_4_8', config.mappings.opus_4_8);
+          setSelectValue('map-opus_4_7', config.mappings.opus_4_7);
+          setSelectValue('map-opus_4_6', config.mappings.opus_4_6);
+          setSelectValue('map-sonnet_4_6_1m', config.mappings.sonnet_4_6_1m);
+          setSelectValue('map-sonnet_4_6', config.mappings.sonnet_4_6);
+          setSelectValue('map-haiku_4_5', config.mappings.haiku_4_5);
+          setSelectValue('map-codex', config.mappings.codex);
+          setSelectValue('map-gpt_5_5', config.mappings.gpt_5_5);
+          setSelectValue('map-gpt_5_4', config.mappings.gpt_5_4);
+        }
+
+        document.getElementById('proxy-status').textContent = 'Подключено';
+        document.querySelector('.status-dot').style.backgroundColor = 'var(--success)';
+        document.querySelector('.status-dot').style.boxShadow = '0 0 8px var(--success)';
+      } catch (err) {
+        console.error(err);
+        showToast('Не удалось загрузить конфигурацию', true);
+        document.getElementById('proxy-status').textContent = 'Ошибка';
+        document.querySelector('.status-dot').style.backgroundColor = 'var(--error)';
+        document.querySelector('.status-dot').style.boxShadow = '0 0 8px var(--error)';
+      }
+    }
+
+    async function saveConfig() {
+      const config = {
+        targetHost: document.getElementById('target-host').value,
+        targetPort: parseInt(document.getElementById('target-port').value) || 8319,
+        cliproxyApiKey: document.getElementById('api-key').value,
+        mappings: {
+          composer: document.getElementById('map-composer').value,
+          opus_4_8: document.getElementById('map-opus_4_8').value,
+          opus_4_7: document.getElementById('map-opus_4_7').value,
+          opus_4_6: document.getElementById('map-opus_4_6').value,
+          sonnet_4_6_1m: document.getElementById('map-sonnet_4_6_1m').value,
+          sonnet_4_6: document.getElementById('map-sonnet_4_6').value,
+          haiku_4_5: document.getElementById('map-haiku_4_5').value,
+          codex: document.getElementById('map-codex').value,
+          gpt_5_5: document.getElementById('map-gpt_5_5').value,
+          gpt_5_4: document.getElementById('map-gpt_5_4').value
+        }
+      };
+
+      try {
+        const response = await fetch('/api/config', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(config)
+        });
+
+        if (!response.ok) throw new Error('Не удалось сохранить конфиг');
+        const res = await response.json();
+        
+        if (res.status === 'ok') {
+          showToast('Настройки сохранены и применены в рантайме!');
+        } else {
+          throw new Error(res.message || 'Неизвестная ошибка');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Ошибка при сохранении: ' + err.message, true);
+      }
+    }
+
+    // Логи
+    let lastLogIndex = 0;
+    
+    async function pollLogs() {
+      try {
+        const response = await fetch(`/api/logs?since=${lastLogIndex}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        
+        if (data.logs && data.logs.length > 0) {
+          const consoleEl = document.getElementById('logs-console');
+          
+          // Если это первый запрос и там стандартный плейсхолдер - очищаем его
+          if (lastLogIndex === 0 && consoleEl.innerHTML.includes('Консоль мониторинга готова')) {
+            consoleEl.innerHTML = '';
+          }
+
+          data.logs.forEach(log => {
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = log.time;
+            
+            const contentSpan = document.createElement('span');
+            let contentClass = 'log-info';
+            if (log.message.includes('Error') || log.message.includes('Failed') || log.message.includes('error:')) {
+              contentClass = 'log-error';
+            } else if (log.message.includes('Mapped') || log.message.includes('Intercepted')) {
+              contentClass = 'log-success';
+            } else if (log.message.includes('Warning')) {
+              contentClass = 'log-warn';
+            }
+            
+            contentSpan.className = contentClass;
+            contentSpan.textContent = log.message;
+            
+            line.appendChild(timeSpan);
+            line.appendChild(contentSpan);
+            consoleEl.appendChild(line);
+          });
+          
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+          lastLogIndex = data.lastIndex;
+        }
+      } catch (e) {
+        console.error('Polling logs failed', e);
+      }
+    }
+
+    function startLogsPolling() {
+      pollLogs();
+      if (!logsInterval) {
+        logsInterval = setInterval(pollLogs, 1500);
+      }
+    }
+
+    function stopLogsPolling() {
+      if (logsInterval) {
+        clearInterval(logsInterval);
+        logsInterval = null;
+      }
+    }
+
+    function clearLogs() {
+      document.getElementById('logs-console').innerHTML = '';
+      fetch('/api/logs/clear', { method: 'POST' }).then(() => {
+        lastLogIndex = 0;
+      });
+    }
+
+    // Инициализация при загрузке
+    window.addEventListener('DOMContentLoaded', () => {
+      loadConfig();
+    });
+  </script>
+</body>
+</html>
