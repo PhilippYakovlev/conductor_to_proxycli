@@ -1,78 +1,80 @@
 # SmartProxy Unified Stack
 
+**English** | [Русский](README_RU.md) | [中文](README_ZH.md)
+
 > [!IMPORTANT]
-> **ИНСТРУКЦИЯ ДЛЯ ИИ-АГЕНТОВ (Если ты агент и читаешь это):**
-> 1. **Обязательно изучи Wiki проекта** перед началом работы. Главный файл оглавления находится по пути **[wiki/index.md](wiki/index.md)**. Там описана архитектура, интеграция и нюансы работы стека.
-> 2. **Как устанавливать и запускать проект:**
->    * Убедись, что Docker запущен на хосте.
->    * Останови и удали старый конфликтующий контейнер (если он остался в системе): `docker rm -f cli-proxy-api`.
->    * Запусти весь стек в локальном режиме: `./run.sh local`.
->    * Подробности установки и отладки читай в **[wiki/setup.md](wiki/setup.md)**.
-> 3. **Как читать логи прокси:** Вся информация о перехвате запросов от Conductor и маппинге моделей пишется в логи контейнера обертки: `docker logs -f smartproxy-wrapper`.
-> 4. **Не ломай подпись macOS:** Не пытайся изменять бинарники Conductor на диске (это вызовет `SIGKILL`). Все настройки делай через `.conductor/settings.local.toml` воркспейса и скрипт [codex_wrapper.sh](smart-proxy/codex_wrapper.sh).
+> **INSTRUCTIONS FOR AI AGENTS (If you are an agent and reading this):**
+> 1. **Be sure to study the project Wiki** before starting work. The main catalog file is located at **[wiki/index.md](wiki/index.md)**. It describes the architecture, integration, and nuances of the stack.
+> 2. **How to install and run the project:**
+>    * Make sure Docker is running on the host.
+>    * Stop and remove the old conflicting container (if it remains in the system): `docker rm -f cli-proxy-api`.
+>    * Run the entire stack in local mode: `./run.sh local`.
+>    * Read details on installation and debugging in **[wiki/setup.md](wiki/setup.md)**.
+> 3. **How to read proxy logs:** All information about intercepting requests from Conductor and mapping models is written to the logs of the wrapper container: `docker logs -f smartproxy-wrapper`.
+> 4. **Do not break the macOS code signature:** Do not attempt to modify Conductor binaries on disk (this will cause a `SIGKILL`). Make all configurations via the workspace `.conductor/settings.local.toml` and the [codex_wrapper.sh](smart-proxy/codex_wrapper.sh) script.
 
 ---
 
-Этот репозиторий объединяет все смежные проекты прокси-серверов в единую структуру с общим Docker-окружением:
+This repository unites all adjacent proxy server projects into a single structure with a shared Docker environment:
 
-1. **`cli-proxy-api`** (локальный или удаленный бэкенд прокси-сервера).
-2. **`smart-proxy`** (умный прокси-сервер `proxy_wrapper.js` для перехвата и трансляции RPC-запросов Conductor/Composer).
-3. **`free-claude-code`** (адаптер для работы утилиты Claude Code через наш прокси).
-
----
-
-## 📚 Документация и База Знаний (Wiki)
-
-Для проекта разработана подробная база знаний по концепции "LLM Wiki", расположенная в папке **[wiki/](wiki/)**:
-* **[wiki/index.md](wiki/index.md)** — Главное оглавление и каталог всех страниц Wiki.
-* **[wiki/architecture.md](wiki/architecture.md)** — Схема взаимодействия и детальная архитектура стека.
-* **[wiki/setup.md](wiki/setup.md)** — Инструкции по развертыванию Docker-стека и отладке.
-* **[wiki/conductor.md](wiki/conductor.md)** — Руководство по интеграции с Conductor и обходу защиты macOS.
-* **[wiki/models.md](wiki/models.md)** — Принципы работы маппинга моделей в умном прокси.
-* **[wiki/log.md](wiki/log.md)** — Хронология изменений проекта.
-
-### 🤖 Инструкции для ИИ-агентов (Codex, Claude, Gemini)
-В корне проекта созданы специальные конфигурационные файлы для агентов: **[agents.md](agents.md)**, **[claude.md](claude.md)** и **[gemini.md](gemini.md)**. 
+1. **`cli-proxy-api`** (local or remote proxy server backend).
+2. **`smart-proxy`** (smart proxy server `proxy_wrapper.js` for intercepting and translating Conductor/Composer RPC requests).
+3. **`free-claude-code`** (adapter for running the Claude Code utility through our proxy).
 
 ---
 
-## Быстрый запуск
+## 📚 Documentation and Knowledge Base (Wiki)
 
-Для управления стеком подготовлен скрипт `run.sh`. Он автоматически конфигурирует окружение и запускает нужные контейнеры.
+A detailed knowledge base based on the "LLM Wiki" concept has been developed for the project, located in the **[wiki/](wiki/)** folder:
+* **[wiki/index.md](wiki/index.md)** — Main table of contents and catalog of all Wiki pages.
+* **[wiki/architecture.md](wiki/architecture.md)** — Interaction schema and detailed stack architecture.
+* **[wiki/setup.md](wiki/setup.md)** — Instructions for deploying the Docker stack and debugging.
+* **[wiki/conductor.md](wiki/conductor.md)** — Guide to integrating with Conductor and bypassing macOS protection.
+* **[wiki/models.md](wiki/models.md)** — Principles of model mapping in the smart proxy.
+* **[wiki/log.md](wiki/log.md)** — Chronology of project changes.
 
-### Вариант А: Локальный запуск (поднимается локальный `cli-proxy-api` на порту 8319)
+### 🤖 Instructions for AI Agents (Codex, Claude, Gemini)
+Special agent configuration files have been created in the root of the project: **[agents.md](agents.md)**, **[claude.md](claude.md)**, and **[gemini.md](gemini.md)**.
+
+---
+
+## Quick Start
+
+A `run.sh` script is provided to manage the stack. It automatically configures the environment and starts the required containers.
+
+### Option A: Local Run (starts local `cli-proxy-api` on port 8319)
 ```bash
 ./run.sh local
 ```
-При этом запускаются:
-* **`smart-proxy`** на порту `8317`
-* **`free-claude-code`** на порту `8082`
-* **`cli-proxy-api`** на порту `8319` (и его панель управления: `http://localhost:8319/management.html`)
+This starts:
+* **`smart-proxy`** on port `8317`
+* **`free-claude-code`** on port `8082`
+* **`cli-proxy-api`** on port `8319` (and its control panel: `http://localhost:8319/management.html`)
 
-### Вариант Б: Запуск для удаленного хоста (локальный `cli-proxy-api` не запускается)
-Передайте IP-адрес или домен удаленного сервера в качестве аргумента:
+### Option B: Remote Run (local `cli-proxy-api` is not started)
+Pass the IP address or domain of the remote server as an argument:
 ```bash
 ./run.sh 90.156.253.38
 ```
-При этом запускаются только:
-* **`smart-proxy`** на порту `8317` (перенаправляет запросы на удаленный сервер `90.156.253.38:8319`)
-* **`free-claude-code`** на порту `8082`
+This starts only:
+* **`smart-proxy`** on port `8317` (redirects requests to the remote server `90.156.253.38:8319`)
+* **`free-claude-code`** on port `8082`
 
 ---
 
-## Конфигурация
+## Configuration
 
-Все настройки сохраняются в корневом файле `.env`. Вы можете вручную отредактировать следующие параметры:
+All settings are saved in the root `.env` file. You can manually edit the following parameters:
 
-* `BASE_URL` — `local` или IP-адрес удаленного сервера.
-* `PORT` — порт умного прокси (по умолчанию `8317`).
-* `CLAUDE_PORT` — порт адаптера Claude Code (по умолчанию `8082`).
-* `CLIPROXY_API_KEY` — API-ключ для авторизации.
-* `CONDUCTOR_*` — выбор моделей по умолчанию для ассистента Conductor.
+* `BASE_URL` — `local` or the IP address of the remote server.
+* `PORT` — smart proxy port (default `8317`).
+* `CLAUDE_PORT` — Claude Code adapter port (default `8082`).
+* `CLIPROXY_API_KEY` — API key for authorization.
+* `CONDUCTOR_*` — default model selection for Conductor assistant.
 
 ---
 
-## Архитектура контейнеров
+## Container Architecture
 
-* **Сетевое взаимодействие:** Все контейнеры запущены в единой виртуальной сети Docker. `free-claude-code` обращается к `smart-proxy` напрямую по внутреннему имени хоста `http://smart-proxy:8317/v1`.
-* **Автозапуск:** Для всех служб установлена политика `restart: always`. Они запустятся автоматически при старте Docker/системы.
+* **Networking:** All containers run in a single virtual Docker network. `free-claude-code` accesses `smart-proxy` directly via the internal host name `http://smart-proxy:8317/v1`.
+* **Autostart:** The `restart: always` policy is set for all services. They will start automatically on Docker/system startup.
