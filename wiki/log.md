@@ -4,6 +4,12 @@ Append-only хронологический список событий, обно
 
 ---
 
+## [2026-06-29] models | Добавление новых моделей Gemini и Claude в маппинг
+* Во фронтенд-панель управления `smart-proxy/admin.html` добавлены новые доступные модели для маппинга во все селекторы:
+  - Gemini: `gemini-3.5-flash-extra-low`
+  - Claude: `claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-opus-4-1-20250805`, `claude-sonnet-4-5-20250929`, `claude-haiku-4-5-20251001`
+* Обновлена документация в `wiki/models.md` с полным перечнем доступных моделей.
+
 ## [2026-06-25] wiki | Создана структура LLM Wiki
 * Созданы файлы `schema.md`, `index.md`, `log.md`, `architecture.md`, `setup.md`, `conductor.md` и `models.md`.
 * Структура Wiki оформлена по паттерну Карпаты для долгосрочного накопления знаний.

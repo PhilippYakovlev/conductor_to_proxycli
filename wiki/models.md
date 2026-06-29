@@ -1,15 +1,16 @@
 ---
 title: "Маппинг моделей и Проксирование"
 category: "логика"
-last_updated: 2026-06-25
+last_updated: 2026-06-29
 sources:
   - "/smart-proxy/proxy_wrapper.js"
+  - "/smart-proxy/admin.html"
   - "/.env"
 ---
 
 # Маппинг моделей и Проксирование запросов
 
-Для корректной работы Conductor с альтернативными моделями (например, GPT-5.5 / GPT-5.4) прокси-сервер `smart-proxy` (`proxy_wrapper.js`) перехватывает запросы и сопоставляет модели с внутренними эндпоинтами.
+Для корректной работы Conductor с альтернативными моделями (например, GPT-5.5 / GPT-5.4, новыми моделями Gemini и Claude) прокси-сервер `smart-proxy` (`proxy_wrapper.js`) перехватывает запросы и сопоставляет модели с внутренними эндпоинтами.
 
 ## ⚙️ Настройка моделей в `.env`
 Переменные окружения задают маппинг моделей, используемых Conductor:
@@ -21,6 +22,33 @@ CONDUCTOR_OPUS_MODEL=cliproxy/claude-opus-4-8
 CONDUCTOR_SONNET_MODEL=cliproxy/claude-sonnet-4-6
 CONDUCTOR_CODEX_MODEL=cliproxy/gpt-5.4
 ```
+
+## 📋 Список доступных моделей для маппинга
+В веб-интерфейсе управления доступны следующие модели (включая локально запущенные на `http://localhost:8319/v1`):
+
+### Модели Anthropic Claude
+- `claude-opus-4-6-thinking`
+- `claude-opus-4-6` (новое)
+- `claude-opus-4-5-20251101` (новое)
+- `claude-opus-4-1-20250805` (новое)
+- `claude-sonnet-4-6`
+- `claude-sonnet-4-5-20250929` (новое)
+- `claude-haiku-4-5-20251001` (новое)
+
+### Модели Google Gemini
+- `gemini-3.5-flash-low`
+- `gemini-3.5-flash-extra-low` (новое)
+- `gemini-3.1-pro-low`
+- `gemini-3.1-flash-lite`
+- `gemini-pro-agent`
+- `gemini-3-flash`
+- `gemini-3-flash-agent`
+
+### Модели OpenAI GPT и другие
+- `gpt-5.5`
+- `gpt-5.4`
+- `gpt-5.4-mini`
+- `gpt-oss-120b-medium`
 
 ---
 
